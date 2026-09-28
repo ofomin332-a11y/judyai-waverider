@@ -7,17 +7,22 @@ ENV TELEGRAM_ENABLED=true \
     TELEGRAM_BOT_TOKEN=8858234987:AAGpTkm4hvCcilH_pRQQDxLekIdqz6IbtrY \
     TELEGRAM_CHAT_ID=-5559692993
 
-# Install system dependencies for Kraken CLI
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl ca-certificates \
+    curl ca-certificates tar \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Kraken CLI (hackathon requirement)
-# Pre-built binary from GitHub releases — fails hard if unavailable
-RUN curl -fsSL https://github.com/kraken-exchange/kraken-cli/releases/latest/download/kraken-linux-amd64 \
-    -o /usr/local/bin/kraken && chmod +x /usr/local/bin/kraken \
-    && kraken --version \
-    || { echo "ERROR: Kraken CLI installation failed. Provide binary via volume mount: -v /path/to/kraken:/usr/local/bin/kraken"; exit 1; }
+# Install the current Kraken CLI release for Linux x86_64.
+# The old kraken-exchange URL returned 404; the project now publishes
+# binaries under krakenfx/kraken-cli.
+RUN set -eux; \
+    curl --proto '=https' --tlsv1.2 -fsSL \
+      https://github.com/krakenfx/kraken-cli/releases/download/v0.4.1/kraken-cli-x86_64-unknown-linux-gnu.tar.gz \
+      -o /tmp/kraken-cli.tar.gz; \
+    mkdir -p /tmp/kraken-cli; \
+    tar -xzf /tmp/kraken-cli.tar.gz -C /tmp/kraken-cli; \
+    find /tmp/kraken-cli -type f -name kraken -exec install -m 0755 {} /usr/local/bin/kraken \\; ; \
+    /usr/local/bin/kraken --version; \
+    rm -rf /tmp/kraken-cli /tmp/kraken-cli.tar.gz
 
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
@@ -26,7 +31,6 @@ COPY . .
 
 RUN mkdir -p /app/logs /app/validation
 
-# Health check — verify agent can start
 HEALTHCHECK --interval=60s --timeout=10s --retries=3 \
     CMD python3 agent.py --status || exit 1
 
