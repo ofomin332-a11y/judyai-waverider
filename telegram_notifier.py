@@ -18,7 +18,7 @@ import urllib.request
 logger = logging.getLogger(__name__)
 
 TELEGRAM_ENABLED = os.getenv("TELEGRAM_ENABLED", "true").lower() == "true"
-TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
+TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "8858234987:AAGpTkm4hvCcilH_pRQQDxLekIdqz6IbtrY").strip()
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "-5559692993").strip()
 
 

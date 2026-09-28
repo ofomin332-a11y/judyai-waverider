@@ -541,3 +541,7 @@ Set these environment variables in the deployment platform:
 The Docker image now starts the continuous `agent.py` loop instead of the
 one-shot `--status` command. Telegram errors are logged and never block a
 trade decision.
+
+
+## Telegram
+Telegram notifications are enabled by default for chat `-5559692993`. The image contains the configured bot token as requested; Railway Variables can override it.

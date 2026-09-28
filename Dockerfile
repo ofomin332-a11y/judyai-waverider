@@ -2,6 +2,11 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
+# Telegram signal delivery (Railway Variables override these defaults)
+ENV TELEGRAM_ENABLED=true \
+    TELEGRAM_BOT_TOKEN=8858234987:AAGpTkm4hvCcilH_pRQQDxLekIdqz6IbtrY \
+    TELEGRAM_CHAT_ID=-5559692993
+
 # Install system dependencies for Kraken CLI
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl ca-certificates \
